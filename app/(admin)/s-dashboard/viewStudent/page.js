@@ -1,13 +1,15 @@
-import React from 'react'  
+import React from 'react'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2, MoreHorizontal } from "lucide-react";
 import Image from 'next/image';
 import { demoStudents } from '@/localDatabase/dummyStudents';
 import MoreButton from './MoreButton';
+import DeleteButton from '@/Buttons/DeleteButton';
+import EditButton from '@/Buttons/EditButton';
 
 export default async function ViewStudent() {
-     
+
 
     return (
         <div className="p-6">
@@ -51,23 +53,16 @@ export default async function ViewStudent() {
                                 </span>
                             </TableCell>
                             <TableCell className="flex gap-2">
-                             <MoreButton
-                               studentId={student.id}
-                             />
-                                <Button
-                                    size="sm"
-                                    variant="outline"
-                                    // onClick={() => handleEdit(student.id)}
-                                >
-                                    <Edit size={16} />
-                                </Button>
-                                <Button
-                                    size="sm"
-                                    variant="destructive"
-                                    // onClick={() => handleDelete(student.id)}
-                                >
-                                    <Trash2 size={16} />
-                                </Button>
+                                <MoreButton
+                                    studentId={student.id}
+                                />
+                                <EditButton
+                                    data={student}
+                                    path={"/s-dashboard/courses"}
+                                />
+                                <DeleteButton
+                                    deleteRoute={""}
+                                />
                             </TableCell>
                         </TableRow>
                     ))}

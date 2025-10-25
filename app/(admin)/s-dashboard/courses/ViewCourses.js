@@ -9,9 +9,12 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Delete, Edit } from 'lucide-react';
+import EditButton from '@/Buttons/EditButton';
+import DeleteButton from '@/Buttons/DeleteButton';
+import { courseActions } from '@/constans/Endpoints';
 
 export default function ViewCourses({ courses }) {
+
     return (
         <div className="p-6 space-y-10">
 
@@ -19,12 +22,12 @@ export default function ViewCourses({ courses }) {
             <Card className="shadow-md">
                 <CardHeader>
                     <CardTitle className="text-xl font-semibold text-gray-700">
-                        Course List (Demo)
+                        Course List
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
                     <Table>
-                        <TableCaption>Demo Courses for the Training Center</TableCaption>
+                        <TableCaption>All Courses for the Training Center</TableCaption>
                         <TableHeader>
                             <TableRow>
                                 <TableHead>ID</TableHead>
@@ -32,25 +35,22 @@ export default function ViewCourses({ courses }) {
                                 <TableHead>Duration</TableHead>
                                 <TableHead>Price</TableHead>
                                 <TableHead>Trainer</TableHead>
+                                <TableHead>Actions</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {courses.map((course) => (
-                                <TableRow key={course.id}>
-                                    <TableCell>{course.id}</TableCell>
-                                    <TableCell>{course.name}</TableCell>
+                            {courses.map((course, index) => (
+                                <TableRow key={course._id}>
+                                    <TableCell>{index + 1}</TableCell>
+                                    <TableCell>{course.title}</TableCell>
                                     <TableCell>{course.duration}</TableCell>
                                     <TableCell>{course.price}</TableCell>
                                     <TableCell>{course.trainer}</TableCell>
-                                    <TableCell>
-                                        <button className=' cursor-pointer text-blue-500 bg-blue-100'>
-                                            <Edit />
-                                        </button>
-                                    </TableCell>
-                                    <TableCell>
-                                        <button className=' cursor-pointer text-red-500 bg-red-100'>
-                                            <Delete />
-                                        </button>
+                                    <TableCell className={"flex items-center gap-2"}>
+                                        <EditButton />
+                                        <DeleteButton
+                                            deleteRoute={courseActions + course._id}
+                                        />
                                     </TableCell>
                                 </TableRow>
                             ))}

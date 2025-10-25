@@ -1,16 +1,26 @@
 "use client"
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
+import SubmitButton from '../components/SubmitButton'
+import { courseCreateGet } from '@/constans/Endpoints'
+import { postAction } from '@/actions/postAction'
+import { globalContext } from '@/ContextApi/ContextApi'
+import { useRouter } from 'next/navigation'
+import { Textarea } from '@/components/ui/textarea'
+import InputField from '@/helpers/InputField'
+import TextareaField from '@/helpers/TextareaField'
 
 export default function AddCourse() {
+    const router = useRouter();
+    const { showToast } = useContext(globalContext)
+    const [loading, setLoading] = useState(false);
     const [courseData, setCourseData] = useState({
         title: '',
         description: '',
         duration: '',
         price: '',
-        trainer: "Nahid Arman Roni" 
+        trainer: "Nahid Arman Roni"
     })
 
     const handleChange = (e) => {
@@ -18,10 +28,27 @@ export default function AddCourse() {
         setCourseData(prev => ({ ...prev, [name]: value }))
     }
 
-    const handleSubmit = (e) => {
-        e.preventDefault()
-        console.log(courseData)
-        // এখানে API call করে course save করা যাবে
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true)
+        try {
+
+            const payload = {
+                method: "POST",
+                endPoint: courseCreateGet,
+                body: courseData
+            };
+
+            const { status, data } = await postAction(payload);
+            showToast(status, data)
+            router.refresh();
+
+        } catch (error) {
+            console.log(error)
+        } finally {
+            setLoading(false)
+        }
+
     }
 
     return (
@@ -29,64 +56,54 @@ export default function AddCourse() {
             <h1 className="text-2xl font-bold mb-6">নতুন কোর্স যোগ করুন</h1>
 
             <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-6 space-y-4">
-                <div>
-                    <Label htmlFor="title">কোর্সের নাম</Label>
-                    <Input
-                        id="title"
-                        name="title"
-                        value={courseData.title}
-                        onChange={handleChange}
-                        placeholder="কোর্সের নাম লিখুন"
-                    />
-                </div>
 
-                <div>
-                    <Label htmlFor="description">বিবরণ</Label>
-                    <Input
-                        id="description"
-                        name="description"
-                        value={courseData.description}
-                        onChange={handleChange}
-                        placeholder="কোর্সের সংক্ষিপ্ত বিবরণ লিখুন"
-                    />
-                </div>
+                <InputField
+                    label={"কোর্সের নাম"}
+                    name={"title"}
+                    value={courseData.title}
+                    handleChange={handleChange}
+                    placeholder="কোর্সের নাম লিখুন"
+                />
 
-                <div>
-                    <Label htmlFor="duration">সময়কাল</Label>
-                    <Input
-                        id="duration"
-                        name="duration"
-                        value={courseData.duration}
-                        onChange={handleChange}
-                        placeholder="উদাহরণ: 3 মাস"
-                    />
-                </div>
+                <TextareaField
+                    label={"বিবরণ"}
+                    name={"description"}
+                    value={courseData.description}
+                    handleChange={handleChange}
+                    placeholder="কোর্সের সংক্ষিপ্ত বিবরণ লিখুন (,)"
+                />
 
-                <div>
-                    <Label htmlFor="price">মূল্য</Label>
-                    <Input
-                        id="price"
-                        name="price"
-                        value={courseData.price}
-                        onChange={handleChange}
-                        placeholder="মূল্য লিখুন (BDT)"
-                        type="number"
-                    />
-                </div>
+                <InputField
+                    label={"সময়কাল"}
+                    name="duration"
+                    value={courseData.duration}
+                    handleChange={handleChange}
+                    placeholder="উদাহরণ: 3 মাস"
+                />
 
-                <div>
-                    <Label htmlFor="trainer">ত্রেইনার</Label>
-                    <Input
-                        id="trainer"
-                        name="trainer"
-                        value={courseData.trainer}
-                        onChange={handleChange}
-                        placeholder="ট্রেইনারের নাম লিখুন"
-                        type="text"
-                    />
-                </div>
 
-                <Button type="submit" className="mt-4">কোর্স যোগ করুন</Button>
+                <InputField
+                    label={"মূল্য"}
+                    type="number"
+                    name="price"
+                    value={courseData.price}
+                    handleChange={handleChange}
+                    placeholder="মূল্য লিখুন (BDT)"
+                />
+
+
+                <InputField
+                    label={"ট্রেইনার"}
+                    name="trainer"
+                    value={courseData.trainer}
+                    handleChange={handleChange}
+                    placeholder="ট্রেইনারের নাম লিখুন"
+                />
+
+                <SubmitButton
+                    text='কোর্স যুক্ত করুন'
+                    loading={loading}
+                />
             </form>
         </div>
     )

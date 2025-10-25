@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "../../globals.css";
 import ContextApi from "@/ContextApi/ContextApi";
 import Sidebar from "./components/Sidebar";
+import { Toaster } from "react-hot-toast";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -26,6 +27,7 @@ export default function AdminRootLayout({ children }) {
                 cz-shortcut-listen="true"
             >
                 <ContextApi>
+                    <Toaster />
                     <div className="flex h-screen overflow-hidden">
                         <Sidebar />
 
