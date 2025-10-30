@@ -32,6 +32,9 @@ const courseSchema = new Schema({
         type: String,
         required: [true, "Trainer name is required."],
     },
+    banner: { 
+        type: String,
+     },
     
     createdAt: {
         type: Date,

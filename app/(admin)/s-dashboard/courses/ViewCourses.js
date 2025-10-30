@@ -15,6 +15,8 @@ import { courseActions } from '@/constans/Endpoints';
 
 export default function ViewCourses({ courses }) {
 
+    
+
     return (
         <div className="p-6 space-y-10">
 
@@ -47,7 +49,10 @@ export default function ViewCourses({ courses }) {
                                     <TableCell>{course.price}</TableCell>
                                     <TableCell>{course.trainer}</TableCell>
                                     <TableCell className={"flex items-center gap-2"}>
-                                        <EditButton />
+                                        <EditButton
+                                            data={course}
+                                            route={"/s-dashboard/courses"}
+                                        />
                                         <DeleteButton
                                             deleteRoute={courseActions + course._id}
                                         />

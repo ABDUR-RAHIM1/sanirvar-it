@@ -1,5 +1,6 @@
-import Course from "@/models/Course"; 
-import { errorResponse, successResponse } from "@/app/api/helpers/response";
+ 
+import { errorResponse, successResponseWithData, } from "@/app/api/helpers/response";
+import Course from "@/models/courses";
 
 /**
  * @method GET
@@ -24,7 +25,7 @@ export async function GET(request, { params }) {
             return errorResponse(`Course with ID ${courseId} not found.`, 404);
         }
 
-        return successResponse(course, 200);
+        return successResponseWithData(course, 200);
 
     } catch (error) {
         console.error("Failed to fetch specific course:", error);

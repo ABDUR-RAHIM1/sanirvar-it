@@ -1,32 +1,62 @@
 "use client"
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import SubmitButton from '../components/SubmitButton'
-import { courseCreateGet } from '@/constans/Endpoints'
+import { courseActions, courseCreateGet } from '@/constans/Endpoints'
 import { postAction } from '@/actions/postAction'
 import { globalContext } from '@/ContextApi/ContextApi'
 import { useRouter } from 'next/navigation'
-import { Textarea } from '@/components/ui/textarea'
 import InputField from '@/helpers/InputField'
 import TextareaField from '@/helpers/TextareaField'
+import { IsEditMoodHelper } from '@/helpers/IsEditMood'
+import { uploaderStyle } from '@/helpers/UploadStyle'
 
 export default function AddCourse() {
     const router = useRouter();
-    const { showToast } = useContext(globalContext)
+    const { showToast, editData, uploader, uploadResponse, imgUrl } = useContext(globalContext)
     const [loading, setLoading] = useState(false);
+
+    const isEditMood = IsEditMoodHelper(editData);
+    const { status, message } = uploadResponse;
+    const costomStyle = uploaderStyle(status);
+
     const [courseData, setCourseData] = useState({
         title: '',
         description: '',
         duration: '',
         price: '',
-        trainer: "Nahid Arman Roni"
+        trainer: "Nahid Arman Roni",
+        banner: null,
     })
 
+    //  set Edited Data in Previous State
+    useEffect(() => {
+        if (editData) {
+            setCourseData(editData)
+        }
+    }, [editData])
+
     const handleChange = (e) => {
-        const { name, value } = e.target
-        setCourseData(prev => ({ ...prev, [name]: value }))
-    }
+        const { name, value, type, files } = e.target
+
+        if (type === "file") {
+            uploader(files[0])
+        } else {
+            setCourseData(prev => ({ ...prev, [name]: value }))
+        }
+
+    };
+
+    //  set Image Url In the State
+    useEffect(() => {
+        setCourseData((prev) => ({
+            ...prev,
+            banner: imgUrl
+        }))
+    }, [imgUrl])
+
+    console.log(imgUrl, courseData)
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -34,8 +64,8 @@ export default function AddCourse() {
         try {
 
             const payload = {
-                method: "POST",
-                endPoint: courseCreateGet,
+                method: isEditMood ? "PUT" : "POST",
+                endPoint: isEditMood ? courseActions + courseData._id : courseCreateGet,
                 body: courseData
             };
 
@@ -53,7 +83,9 @@ export default function AddCourse() {
 
     return (
         <div className="p-6">
-            <h1 className="text-2xl font-bold mb-6">নতুন কোর্স যোগ করুন</h1>
+            <h1 className="text-2xl font-bold mb-6">{
+                isEditMood ? "কোর্স আপডেট করুন" : "নতুন কোর্স যোগ করুন"
+            }</h1>
 
             <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-6 space-y-4">
 
@@ -99,9 +131,24 @@ export default function AddCourse() {
                     handleChange={handleChange}
                     placeholder="ট্রেইনারের নাম লিখুন"
                 />
+                <div className=' my-3'>
+                    <InputField
+                        type='file'
+                        label={"কভার ফটো"}
+                        name="banner"
+                        handleChange={handleChange}
+                    />
+                    <small style={costomStyle}>
+                        {
+                            message || null
+                        }
+                    </small>
+                </div>
 
                 <SubmitButton
-                    text='কোর্স যুক্ত করুন'
+                    text={
+                        isEditMood ? "কোর্স আপডেট করুন" : "'কোর্স যুক্ত করুন'"
+                    }
                     loading={loading}
                 />
             </form>

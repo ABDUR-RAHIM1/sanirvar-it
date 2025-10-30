@@ -17,7 +17,7 @@ export default function InputField({
                 type={type}
                 id={name}
                 name={name}
-                value={value}
+                value={value || ""}
                 onChange={handleChange}
                 placeholder={placeholder}
                 required={required}

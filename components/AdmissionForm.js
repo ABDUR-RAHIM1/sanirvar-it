@@ -6,21 +6,46 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Trash2, Plus } from 'lucide-react'; // আইকন ব্যবহারের জন্য 
+import InputField from '@/helpers/InputField';
+import SelectFiled from '@/helpers/SelectFiled';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
 
-// ডাইনামিক শিক্ষাগত তথ্যের জন্য ডিফল্ট সেকশন
-const defaultEducation = {
-    degree: '',
-    board: '',
-    roll: '',
-    reg: '',
-    passingYear: '',
-    result: ''
-};
+
 export default function AdmissionForm({ handleSubmit }) {
     // 💡 শিক্ষাগত তথ্যের জন্য স্টেট
-    const [educationInfo, setEducationInfo] = useState([defaultEducation]);
+    const [defaultEducation, setDefaultEducation] = useState({
+        degree: '',
+        board: '',
+        roll: '',
+        reg: '',
+        passingYear: '',
+        result: ''
 
-    // নতুন এডুকেশন সেকশন যোগ করার ফাংশন
+    })
+    //  multile education (as array)
+    const [educationInfo, setEducationInfo] = useState([]);
+
+
+    const [formData, setFormData] = useState({
+        studentName: "",
+        fatherName: "",
+        motherName: "",
+        dob: "",
+        nidOrBirth: "",
+        religion: "",
+        gender: "",
+        bloodGroup: "",
+        mobileNo: "",
+        guradianMobileNo: "",
+        email: "",
+        vill: "",
+        post: "",
+        upozila: "",
+        dist: "",
+        education: educationInfo,
+        photo: ""
+    })
+    console.log(formData)
     const handleAddEducation = () => {
         setEducationInfo([...educationInfo, defaultEducation]);
     };
@@ -32,6 +57,26 @@ export default function AdmissionForm({ handleSubmit }) {
         list.splice(index, 1);
         setEducationInfo(list);
     };
+
+
+    const handleEducationChange = (e) => {
+        const { name, value } = e.target;
+        setDefaultEducation((prev) => ({
+            ...prev,
+            [name]: value
+        }))
+    };
+
+
+    const handleChange = (e) => {
+        const { name, value, type, files } = e.target;
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value
+        }))
+    };
+
+
 
     return (
         <form
@@ -79,61 +124,218 @@ export default function AdmissionForm({ handleSubmit }) {
             {/* ২. ব্যক্তিগত ও অভিভাবকের তথ্য (পূর্বের ফিল্ডগুলি এখানে থাকবে) */}
             <h3 className="text-xl font-semibold border-b pb-2 pt-4 text-gray-700">ব্যক্তিগত ও অভিভাবকের তথ্য</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* নাম, জন্ম তারিখ, ফোন, লিঙ্গ, ইমেইল, অভিভাবকের নাম, অভিভাবকের ফোন ইত্যাদি এখানে থাকবে */}
-                <div className="space-y-2"><Label htmlFor="name">শিক্ষার্থীর নাম</Label><Input type="text" id="name" required /></div>
-                <div className="space-y-2"><Label htmlFor="dob">জন্ম তারিখ</Label><Input type="date" id="dob" required /></div>
-                <div className="space-y-2"><Label htmlFor="phone">মোবাইল নম্বর</Label><Input type="tel" id="phone" required /></div>
-                <div className="space-y-2 w-full"><Label htmlFor="gender">লিঙ্গ</Label>
-                    <Select required className="w-full"><SelectTrigger id="gender"><SelectValue placeholder="নির্বাচন করুন" /></SelectTrigger><SelectContent><SelectItem value="male">পুরুষ</SelectItem><SelectItem value="female">মহিলা</SelectItem></SelectContent></Select>
-                </div>
-                <div className="space-y-2"><Label htmlFor="guardianName">অভিভাবকের নাম</Label><Input type="text" id="guardianName" required /></div>
-                <div className="space-y-2"><Label htmlFor="guardianPhone">অভিভাবকের ফোন</Label><Input type="tel" id="guardianPhone" required /></div>
+
+
+                <InputField
+                    label={"শিক্ষার্থীর নাম"}
+                    name={"studentName"}
+                    value={formData.studentName}
+                    handleChange={handleChange}
+                    placeholder={"নিজের নাম লিখো"}
+                />
+
+                <InputField
+                    type='date'
+                    label={"জন্ম তারিখ"}
+                    name={"dob"}
+                    value={formData.dob}
+                    handleChange={handleChange}
+                    placeholder={"জন্ম তারিখ"}
+                />
+                <InputField
+                    label={" পিতার নাম"}
+                    name={"fatherName"}
+                    value={formData.fatherName}
+                    handleChange={handleChange}
+                    placeholder={"পিতার নাম"}
+                />
+                <InputField
+                    label={"মাতার নাম"}
+                    name={"motherName"}
+                    value={formData.motherName}
+                    handleChange={handleChange}
+                    placeholder={"মাতার নাম"}
+                />
+
+                <SelectFiled
+                    label={"লিঙ্গ"}
+                    name={"gender"}
+                    options={["পুরুষ", "মহিলা", "অন্যান্য"]}
+                    handleChange={handleChange}
+                    value={formData.gender}
+                />
+                <SelectFiled
+                    label={"রক্তের গ্রুপ"}
+                    name={"bloodGroup"}
+                    options={["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"]}
+                    handleChange={handleChange}
+                    value={formData.bloodGroup}
+                />
+
+                <InputField
+                    type='number'
+                    label={"মোবাইল নাম্বার (শিক্ষার্থী)"}
+                    name={"mobileNo"}
+                    value={formData.mobileNo}
+                    handleChange={handleChange}
+                    placeholder={"শিক্ষার্থীর মোবাইল নং"}
+                />
+                <InputField
+                    type='number'
+                    label={"মোবাইল নাম্বার (অভিভাবক)"}
+                    name={"guardianMobileNo"}
+                    value={formData.guardianMobileNo}
+                    handleChange={handleChange}
+                    placeholder={"অভিভাবকের মোবাইল নং"}
+                />
+
+
             </div>
-            <div className="space-y-2">
-                <Label htmlFor="address">বর্তমান ঠিকানা</Label>
-                <Textarea id="address" required />
+
+            <h3 className="text-xl font-semibold border-b pb-2 pt-4 text-gray-700">স্থায়ী ঠিকানাঃ </h3>
+            <div className="space-y-2 grid grid-cols-2 gap-2">
+
+                <InputField
+                    label={"গ্রাম"}
+                    name={"vill"}
+                    value={formData.vill}
+                    handleChange={handleChange}
+                    placeholder={"গ্রামের নাম"}
+                />
+
+                <InputField
+                    label={"পোষ্ট অফিস"}
+                    name={"post"}
+                    value={formData.post}
+                    handleChange={handleChange}
+                    placeholder={"পোস্ট অফিসের নাম"}
+                />
+
+                <InputField
+                    label={"উপজেলা"}
+                    name={"upozila"}
+                    value={formData.upozila}
+                    handleChange={handleChange}
+                    placeholder={"উপজেলার নাম"}
+                />
+                <InputField
+                    label={"জেলা"}
+                    name={"dist"}
+                    value={formData.dist}
+                    handleChange={handleChange}
+                    placeholder={"জেলার নাম"}
+                />
+
             </div>
 
             {/* ৩. শিক্ষাগত তথ্যের ডাইনামিক সেকশন */}
             <h3 className="text-xl font-semibold border-b pb-2 pt-4 text-gray-700">শিক্ষাগত তথ্যাদি</h3>
 
-            {educationInfo.map((education, index) => (
-                <div key={index} className="border p-4 rounded-lg bg-gray-50 relative">
-                    <h4 className="text-lg font-medium mb-3 text-blue-700">শিক্ষাগত যোগ্যতা {index + 1}</h4>
 
-                    {/* রিমুভ বাটন */}
-                    {educationInfo.length > 1 && (
-                        <Button
-                            type="button"
-                            variant="destructive"
-                            size="icon"
-                            onClick={() => handleRemoveEducation(index)}
-                            className="absolute top-2 right-2 h-8 w-8"
-                        >
-                            <Trash2 className="h-4 w-4" />
-                        </Button>
-                    )}
+            <div className="space-y-6">
+                <div
+                    className="border p-4 rounded-lg bg-gray-50 relative"
+                >
+
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="space-y-2"><Label htmlFor={`degree-${index}`}>ডিগ্রি/পরীক্ষার নাম</Label><Input type="text" id={`degree-${index}`} placeholder="যেমন: S.S.C/H.S.C" required /></div>
-                        <div className="space-y-2"><Label htmlFor={`board-${index}`}>বোর্ড/বিশ্ববিদ্যালয়</Label><Input type="text" id={`board-${index}`} placeholder="যেমন: ঢাকা বোর্ড" required /></div>
-                        <div className="space-y-2"><Label htmlFor={`roll-${index}`}>রোল নম্বর</Label><Input type="text" id={`roll-${index}`} required /></div>
-                        <div className="space-y-2"><Label htmlFor={`reg-${index}`}>রেজিস্ট্রেশন নম্বর</Label><Input type="text" id={`reg-${index}`} /></div>
-                        <div className="space-y-2"><Label htmlFor={`passYear-${index}`}>পাশের সন</Label><Input type="number" id={`passYear-${index}`} required /></div>
-                        <div className="space-y-2"><Label htmlFor={`result-${index}`}>ফলাফল (GPA/শ্রেণী)</Label><Input type="text" id={`result-${index}`} required /></div>
-                    </div>
-                </div>
-            ))}
+                        <InputField
+                            label={`ডিগ্রি/পরীক্ষার নাম`}
+                            name="degree"
+                            value={defaultEducation.degree}
+                            handleChange={handleEducationChange}
+                            placeholder="যেমন: S.S.C/H.S.C"
+                        />
 
-            {/* একাধিক সেকশন যোগ করার বাটন */}
-            <Button
-                type="button"
-                variant="outline"
-                onClick={handleAddEducation}
-                className="w-full border-blue-600 text-blue-600 hover:bg-blue-50"
-            >
-                <Plus className="mr-2 h-4 w-4" /> আরও শিক্ষাগত তথ্য যোগ করুন
-            </Button>
+                        <InputField
+                            label={`বোর্ড/বিশ্ববিদ্যালয়`}
+                            name="board"
+                            value={defaultEducation.board}
+                            handleChange={handleEducationChange}
+                            placeholder="যেমন: ঢাকা বোর্ড"
+                        />
+
+                        <InputField
+                            label={`রোল নম্বর`}
+                            name="roll"
+                            value={defaultEducation.roll}
+                            handleChange={handleEducationChange}
+                            placeholder="বোর্ড পরীক্ষার রোল"
+                        />
+
+                        <InputField
+                            label={`রেজিস্ট্রেশন নম্বর`}
+                            type="number"
+                            name="reg"
+                            value={defaultEducation.reg}
+                            handleChange={handleEducationChange}
+                            placeholder="রেজিস্ট্রেশন নং"
+                        />
+
+                        <InputField
+                            label={`পাশের সন`}
+                            type="number"
+                            name="passingYear"
+                            value={defaultEducation.passingYear}
+                            handleChange={handleEducationChange}
+                            placeholder="কত সালে পাশ করেছেন"
+                        />
+
+                        <InputField
+                            label={`ফলাফল (GPA/শ্রেণী)`}
+                            name="result"
+                            value={defaultEducation.result}
+                            handleChange={handleEducationChange}
+                            placeholder="রেজাল্ট"
+                        />
+                    </div>
+
+                    {/* একাধিক সেকশন যোগ করার বাটন */}
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleAddEducation}
+                        className="w-full my-3 border-blue-600 text-blue-600 hover:bg-blue-50"
+                    >
+                        <Plus className="mr-2 h-4 w-4" /> আরও শিক্ষাগত তথ্য যোগ করুন
+                    </Button>
+                </div>
+
+                {educationInfo.length > 0 && (
+                    <Table className="mt-4 border">
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>ডিগ্রি / পরিক্ষার নাম</TableHead>
+                                <TableHead>বোর্ড</TableHead>
+                                <TableHead>রোল</TableHead>
+                                <TableHead>রেজিস্ট্রেশন</TableHead>
+                                <TableHead>পাসের বছর</TableHead>
+                                <TableHead>ফলাফল</TableHead>
+                            </TableRow>
+                        </TableHeader>
+
+                        <TableBody>
+                            {educationInfo.map((ed, index) => (
+
+                                <TableRow key={index}>
+                                    <TableCell>{ed.degree}</TableCell>
+                                    <TableCell>{ed.board}</TableCell>
+                                    <TableCell>{ed.roll}</TableCell>
+                                    <TableCell>{ed.reg}</TableCell>
+                                    <TableCell>{ed.passingYear}</TableCell>
+                                    <TableCell>{ed.result}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                )}
+
+
+
+
+            </div>
+
+
 
 
             {/* ৪. ছবি আপলোড */}
@@ -152,5 +354,5 @@ export default function AdmissionForm({ handleSubmit }) {
             >
                 ভর্তি ফরম জমা দিন
             </Button>
-        </form>)
+        </form >)
 }
