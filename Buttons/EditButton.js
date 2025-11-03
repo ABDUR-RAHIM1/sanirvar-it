@@ -24,6 +24,7 @@ export default function EditButton({ data, route }) {
             type={"button"}
             size="sm"
             variant="outline"
+            className={"hover:bg-gray-200 cursor-pointer"}
             onClick={handleNaviagte}
         >
             <Edit size={16} />

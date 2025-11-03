@@ -6,7 +6,8 @@ export default function Shedule() {
   return (
     <div className=' pageStyle overflow-hidden'>
       <AddSchedule />
-      {/* <ViewSchedule /> */}
+
+      <ViewSchedule />
     </div>
   )
 }

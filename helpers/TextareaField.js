@@ -12,8 +12,13 @@ export default function TextareaField({
         <div className='w-full'>
             <Label
                 htmlFor={name}
-                className={"texts-sm mb-2"}
-            >{label}</Label>
+                className={"texts-sm mb-2 flex items-center gap-2"}
+            >{label}
+                {required &&
+                    <span className=' text-red-500 font-bold'>
+                        *
+                    </span>}
+            </Label>
             <Textarea
                 id={name}
                 name={name}

@@ -22,6 +22,7 @@ export default function Admission() {
 
     const handleSubmitAdmission = () => {
         console.log("Under Proccesing")
+        alert("কোন লাভ নাই , কাজ চলতেছে!")
     }
 
     return (

@@ -18,9 +18,9 @@ export const updateData = async (Model, id, body) => {
         const updatedDoc = await Model.findByIdAndUpdate(
             id,
             body,
-            { new: true, runValidators: true } // 'new: true' মানে আপডেটের পর নতুন ডকুমেন্টটি রিটার্ন করবে। 'runValidators: true' মানে আপডেটের সময়ও স্কিমা ভ্যালিডেশন চলবে।
+            { new: true, runValidators: true }
         );
-
+     
         if (!updatedDoc) {
             return errorResponse(`${Model.modelName} with ID ${id} not found for update.`, 404);
         }

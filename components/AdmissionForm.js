@@ -1,18 +1,23 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Trash2, Plus } from 'lucide-react'; // আইকন ব্যবহারের জন্য 
+import { Plus } from 'lucide-react'; // আইকন ব্যবহারের জন্য 
 import InputField from '@/helpers/InputField';
 import SelectFiled from '@/helpers/SelectFiled';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
+import { batchList, bloodGroups, genders, registresionStatus, religions } from '@/localDatabase/addStudentData';
+import { getAllSchedule } from '@/fetch/schedule';
+import { formatTime12Hour } from '@/helpers/formatTime';
+import { getAllCourse } from '@/fetch/courses';
+import Image from 'next/image';
 
 
 export default function AdmissionForm({ handleSubmit }) {
-    // 💡 শিক্ষাগত তথ্যের জন্য স্টেট
+    const [courses, setCourses] = useState([])
+    const [schedule, setSchedule] = useState([])
+    const [imagePreview, setImagePreview] = useState(null)
     const [defaultEducation, setDefaultEducation] = useState({
         degree: '',
         board: '',
@@ -27,6 +32,9 @@ export default function AdmissionForm({ handleSubmit }) {
 
 
     const [formData, setFormData] = useState({
+
+        schedule: "",
+        batch: "",
         studentName: "",
         fatherName: "",
         motherName: "",
@@ -45,7 +53,44 @@ export default function AdmissionForm({ handleSubmit }) {
         education: educationInfo,
         photo: ""
     })
-    console.log(formData)
+
+
+    //  get course & schedule from database
+    useEffect(() => {
+        const getData = async () => {
+            try {
+                const { status: courseStatus, data: courseData } = await getAllCourse();
+                const { status, data } = await getAllSchedule();
+
+
+                // courseData
+                if (courseStatus === 200 && courseData) {
+                    // setSchedule(data)
+                    const formatedData = courseData.map((cd) => ({
+                        name: cd.title,
+                        name: cd.title,
+                    }));
+
+                    setCourses(formatedData)
+                }
+
+                // schedule Data
+                if (status === 200 && data) {
+                    // setSchedule(data)
+                    const formatedData = data.map((d) => ({
+                        name: d.scheduleName + " (" + formatTime12Hour(d.startTime) + "-" + formatTime12Hour(d.endTime) + ")",
+                        value: d.scheduleName + " (" + formatTime12Hour(d.startTime) + "-" + formatTime12Hour(d.endTime) + ")",
+                    }));
+
+                    setSchedule(formatedData)
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        };
+        getData()
+    }, [])
+
     const handleAddEducation = () => {
         setEducationInfo([...educationInfo, defaultEducation]);
     };
@@ -70,10 +115,16 @@ export default function AdmissionForm({ handleSubmit }) {
 
     const handleChange = (e) => {
         const { name, value, type, files } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value
-        }))
+        if (type === "file") {
+          
+            const imageObject = URL.createObjectURL(files[0])
+            setImagePreview(imageObject)
+        } else {
+            setFormData((prev) => ({
+                ...prev,
+                [name]: value
+            }))
+        }
     };
 
 
@@ -89,36 +140,67 @@ export default function AdmissionForm({ handleSubmit }) {
             <div className="grid md:grid-cols-2 gap-4">
                 {/* 1. কোর্সের নাম (এখন Select) */}
                 <div className="space-y-2">
-                    <Label htmlFor="courseName">কোর্সের নাম</Label>
-                    <Select required>
-                        <SelectTrigger id="courseName" className="w-full">
-                            <SelectValue placeholder="কোর্স নির্বাচন করুন" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {/* 💡 ডামি কোর্সের তালিকা */}
-                            <SelectItem value="web_dev">ওয়েব ডেভেলপমেন্ট (MERN Stack)</SelectItem>
-                            <SelectItem value="graphics_design">প্রফেশনাল গ্রাফিক্স ডিজাইন</SelectItem>
-                            <SelectItem value="office_management">অফিস ম্যানেজমেন্ট ও আউটসোর্সিং</SelectItem>
-                            <SelectItem value="digital_marketing">ডিজিটাল মার্কেটিং কোর্স</SelectItem>
-                            <SelectItem value="video_editing">ভিডিও এডিটিং ও মোশন গ্রাফিক্স</SelectItem>
-                        </SelectContent>
-                    </Select>
+
+                    <SelectFiled
+                        label={"courseName"}
+                        name={"courseName"}
+                        options={courses || []}
+                        defaultOption={"Select a Course"}
+                        value={formData.courseName}
+                        handleChange={handleChange}
+                    />
                 </div>
 
                 {/* 2. পছন্দের শিফট (Select) */}
                 <div className="space-y-2">
-                    <Label htmlFor="shift">পছন্দের শিফট</Label>
-                    <Select required>
-                        <SelectTrigger id="shift" className="w-full">
-                            <SelectValue placeholder="শিফট নির্বাচন করুন" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="morning">সকাল (Morning)</SelectItem>
-                            <SelectItem value="day">বিকাল (Day)</SelectItem>
-                            <SelectItem value="evening">সন্ধ্যা (Evening)</SelectItem>
-                        </SelectContent>
-                    </Select>
+                    <SelectFiled
+                        label={"schedule"}
+                        name={"schedule"}
+                        options={schedule || []}
+                        defaultOption={"Select a Schedule"}
+                        value={formData.schedule}
+                        handleChange={handleChange}
+                    />
                 </div>
+                <div className='w-full' >
+
+                    <SelectFiled
+                        label={`batch ${new Date().getFullYear()}`}
+                        name={"batch"}
+                        options={batchList}
+                        defaultOption={`Select a batch -  ${new Date().getFullYear()}`}
+                        value={formData.batch}
+                        handleChange={handleChange}
+                    />
+                </div>
+                <div className='w-full' >
+
+                    <SelectFiled
+                        label={"Registration"}
+                        name={"registrationStatus"}
+                        options={registresionStatus}
+                        defaultOption={"Select Registration Status"}
+                        value={formData.registrationStatus}
+                        handleChange={handleChange}
+                    />
+                </div>
+
+                <InputField
+                    type='number'
+                    label={"Course Fee"}
+                    name={"regularCourseFee"}
+                    value={formData.regularCourseFee}
+                    handleChange={handleChange}
+                    placeholder={"Regular Course Fee"}
+                />
+                <InputField
+                    type='number'
+                    label={"Offer Fee"}
+                    name={"offerCourseFee"}
+                    value={formData.offerCourseFee}
+                    handleChange={handleChange}
+                    placeholder={"Offer Course Fee"}
+                />
             </div>
 
             {/* ২. ব্যক্তিগত ও অভিভাবকের তথ্য (পূর্বের ফিল্ডগুলি এখানে থাকবে) */}
@@ -131,7 +213,7 @@ export default function AdmissionForm({ handleSubmit }) {
                     name={"studentName"}
                     value={formData.studentName}
                     handleChange={handleChange}
-                    placeholder={"নিজের নাম লিখো"}
+                    placeholder={"Write Your good name"}
                 />
 
                 <InputField
@@ -140,45 +222,60 @@ export default function AdmissionForm({ handleSubmit }) {
                     name={"dob"}
                     value={formData.dob}
                     handleChange={handleChange}
-                    placeholder={"জন্ম তারিখ"}
+                    placeholder={"Date of birth"}
                 />
                 <InputField
                     label={" পিতার নাম"}
                     name={"fatherName"}
                     value={formData.fatherName}
                     handleChange={handleChange}
-                    placeholder={"পিতার নাম"}
+                    placeholder={"Father's Name"}
                 />
                 <InputField
                     label={"মাতার নাম"}
                     name={"motherName"}
                     value={formData.motherName}
                     handleChange={handleChange}
-                    placeholder={"মাতার নাম"}
+                    placeholder={"Mother's Name"}
                 />
 
                 <SelectFiled
                     label={"লিঙ্গ"}
                     name={"gender"}
-                    options={["পুরুষ", "মহিলা", "অন্যান্য"]}
+                    options={genders}
                     handleChange={handleChange}
                     value={formData.gender}
                 />
                 <SelectFiled
                     label={"রক্তের গ্রুপ"}
                     name={"bloodGroup"}
-                    options={["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"]}
+                    options={bloodGroups}
                     handleChange={handleChange}
                     value={formData.bloodGroup}
                 />
-
+                <SelectFiled
+                    label={"Religion"}
+                    name={"religion"}
+                    options={religions}
+                    handleChange={handleChange}
+                    value={formData.religion}
+                />
+                <InputField
+                    type='email'
+                    label={"Email"}
+                    name={"mobileNo"}
+                    value={formData.email}
+                    handleChange={handleChange}
+                    placeholder={"Student Email (optional)"}
+                    required={false}
+                />
                 <InputField
                     type='number'
                     label={"মোবাইল নাম্বার (শিক্ষার্থী)"}
                     name={"mobileNo"}
                     value={formData.mobileNo}
                     handleChange={handleChange}
-                    placeholder={"শিক্ষার্থীর মোবাইল নং"}
+                    placeholder={"Student Phone Number"}
                 />
                 <InputField
                     type='number'
@@ -186,7 +283,7 @@ export default function AdmissionForm({ handleSubmit }) {
                     name={"guardianMobileNo"}
                     value={formData.guardianMobileNo}
                     handleChange={handleChange}
-                    placeholder={"অভিভাবকের মোবাইল নং"}
+                    placeholder={"Gurdian Phone Number"}
                 />
 
 
@@ -200,7 +297,7 @@ export default function AdmissionForm({ handleSubmit }) {
                     name={"vill"}
                     value={formData.vill}
                     handleChange={handleChange}
-                    placeholder={"গ্রামের নাম"}
+                    placeholder={"Village Name"}
                 />
 
                 <InputField
@@ -208,7 +305,7 @@ export default function AdmissionForm({ handleSubmit }) {
                     name={"post"}
                     value={formData.post}
                     handleChange={handleChange}
-                    placeholder={"পোস্ট অফিসের নাম"}
+                    placeholder={"Post Office Name"}
                 />
 
                 <InputField
@@ -216,14 +313,14 @@ export default function AdmissionForm({ handleSubmit }) {
                     name={"upozila"}
                     value={formData.upozila}
                     handleChange={handleChange}
-                    placeholder={"উপজেলার নাম"}
+                    placeholder={"Upozila Name"}
                 />
                 <InputField
                     label={"জেলা"}
                     name={"dist"}
                     value={formData.dist}
                     handleChange={handleChange}
-                    placeholder={"জেলার নাম"}
+                    placeholder={"District Name"}
                 />
 
             </div>
@@ -340,10 +437,30 @@ export default function AdmissionForm({ handleSubmit }) {
 
             {/* ৪. ছবি আপলোড */}
             <h3 className="text-xl font-semibold border-b pb-2 pt-4 text-gray-700">ছবি এবং কাগজপত্র</h3>
-            <div className="space-y-2">
-                <Label htmlFor="photo">আপনার সাম্প্রতিক ছবি (ফটোর ফাইল)</Label>
-                <Input type="file" id="photo" required />
-                <p className="text-xs text-gray-500">সর্বোচ্চ ২ মেগাবাইট, JPG/PNG ফরম্যাট।</p>
+            <div className=" space-y-2 grid grid-cols-2 gap-2">
+                <div>
+                    <Label htmlFor="photo">আপনার সাম্প্রতিক ছবি (ফটোর ফাইল)</Label>
+                    <Input type="file" id="photo" name={"photo"}
+                    onChange={handleChange}
+                    required />
+                    <p className="text-xs my-2 text-gray-500">
+                        এই ফটো রেজিস্ট্রেশনের সময় ব্যবহার হবে
+                    </p>
+                </div>
+                <div className='py-4 flex items-center justify-center'>
+                    <div className=' border rounded-md min-w-[200px] min-h-[200px] w-[200px] h-[200px]'>
+                        {
+                            imagePreview !== null &&
+                            <Image
+                                alt='sanirvor Computer Institute'
+                                src={imagePreview}
+                                width={200}
+                                height={200}
+                                className='w-full h-full'
+                            />
+                        }
+                    </div>
+                </div>
             </div>
 
 

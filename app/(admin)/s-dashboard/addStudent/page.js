@@ -3,11 +3,11 @@ import AdmissionForm from "@/components/AdmissionForm";
 import React from "react";
 
 export default function AddStudent() {
- 
+
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Student Data:", formData);
-    alert("Student Registered Successfully!");
+    alert("কোন লাভ নাই , কাজ চলতেছে!")
   };
 
   return (

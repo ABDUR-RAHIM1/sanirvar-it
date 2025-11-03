@@ -8,7 +8,6 @@ export const postAction = async (payload) => {
 
     const { method, endPoint, body } = payload;
  
-
     const res = await fetch(baseUrl + endPoint, {
         method: method, // pass from components
         headers: {

@@ -22,7 +22,7 @@ export default function DeleteButton({ deleteRoute }) {
         setIsLoading(true)
         try {
             const { status, data } = await deleteAction(deleteRoute);
-            console.log(data)
+          
             showToast(status, data)
             router.refresh()
 
@@ -39,6 +39,7 @@ export default function DeleteButton({ deleteRoute }) {
             size="sm"
             variant="destructive"
             onClick={handleDelete}
+            className={"hover:bg-red-900 cursor-pointer transition-all"}
         >
             {
                 isLoading ? ".." : <Trash2 size={16} />
