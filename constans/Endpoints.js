@@ -16,3 +16,7 @@ export const scheduleActions = e.NEXT_PUBLIC_SCHEDULE_ACTIONS
 export const courseCreateGet = e.NEXT_PUBLIC_COURSE_CREATE_GET
 export const courseActions = e.NEXT_PUBLIC_COURSE_ACTIONS
 // course End here
+
+//  student Start
+export const studentCreateGet = e.NEXT_PUBLIC_STUDENT_CREATE_GET
+//  student End

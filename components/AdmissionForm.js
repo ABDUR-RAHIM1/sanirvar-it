@@ -1,20 +1,25 @@
 "use client"
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Plus } from 'lucide-react'; // আইকন ব্যবহারের জন্য 
 import InputField from '@/helpers/InputField';
-import SelectFiled from '@/helpers/SelectFiled';
+import Selectfield from '@/helpers/SelectField';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
-import { batchList, bloodGroups, genders, registresionStatus, religions } from '@/localDatabase/addStudentData';
+import { batchList, bloodGroups, boards, examName, genders, registresionStatus, religions } from '@/localDatabase/addStudentData';
 import { getAllSchedule } from '@/fetch/schedule';
 import { formatTime12Hour } from '@/helpers/formatTime';
 import { getAllCourse } from '@/fetch/courses';
 import Image from 'next/image';
+import { globalContext } from '@/ContextApi/ContextApi';
+import { uploaderStyle } from '@/helpers/UploadStyle';
+import Spinner from '@/helpers/Spinner';
+import { usePathname } from 'next/navigation';
 
 
-export default function AdmissionForm({ handleSubmit }) {
+export default function AdmissionForm({ handleSubmit, isLoading }) {
+    const path = usePathname();
     const [courses, setCourses] = useState([])
     const [schedule, setSchedule] = useState([])
     const [imagePreview, setImagePreview] = useState(null)
@@ -30,30 +35,19 @@ export default function AdmissionForm({ handleSubmit }) {
     //  multile education (as array)
     const [educationInfo, setEducationInfo] = useState([]);
 
+    const { studentFormData, setStudentFormData, uploader, imgUrl, uploadResponse } = useContext(globalContext);
 
-    const [formData, setFormData] = useState({
+    const { status, message } = uploadResponse;
+    const costomStyle = uploaderStyle(status)
 
-        schedule: "",
-        batch: "",
-        studentName: "",
-        fatherName: "",
-        motherName: "",
-        dob: "",
-        nidOrBirth: "",
-        religion: "",
-        gender: "",
-        bloodGroup: "",
-        mobileNo: "",
-        guradianMobileNo: "",
-        email: "",
-        vill: "",
-        post: "",
-        upozila: "",
-        dist: "",
-        education: educationInfo,
-        photo: ""
-    })
+    const isAdminPath = path.startsWith("/s-dashboard")
 
+    useEffect(() => {
+        setStudentFormData((prev) => ({
+            ...prev,
+            education: educationInfo
+        }))
+    }, [educationInfo])
 
     //  get course & schedule from database
     useEffect(() => {
@@ -91,6 +85,17 @@ export default function AdmissionForm({ handleSubmit }) {
         getData()
     }, [])
 
+
+    //  set image url in the state
+    useEffect(() => {
+        if (imgUrl) {
+            setStudentFormData((prev) => ({
+                ...prev,
+                photo: imgUrl
+            }))
+        }
+    }, [imgUrl])
+
     const handleAddEducation = () => {
         setEducationInfo([...educationInfo, defaultEducation]);
     };
@@ -112,21 +117,25 @@ export default function AdmissionForm({ handleSubmit }) {
         }))
     };
 
-
+    console.log(studentFormData)
     const handleChange = (e) => {
         const { name, value, type, files } = e.target;
         if (type === "file") {
-          
-            const imageObject = URL.createObjectURL(files[0])
-            setImagePreview(imageObject)
+
+            const file = files[0]
+            const imageObject = URL.createObjectURL(file)
+            setImagePreview(imageObject);
+            uploader(file)
         } else {
-            setFormData((prev) => ({
+            setStudentFormData((prev) => ({
                 ...prev,
                 [name]: value
             }))
         }
     };
 
+
+    console.log(studentFormData)
 
 
     return (
@@ -141,66 +150,52 @@ export default function AdmissionForm({ handleSubmit }) {
                 {/* 1. কোর্সের নাম (এখন Select) */}
                 <div className="space-y-2">
 
-                    <SelectFiled
+                    <Selectfield
                         label={"courseName"}
                         name={"courseName"}
                         options={courses || []}
                         defaultOption={"Select a Course"}
-                        value={formData.courseName}
+                        value={studentFormData.courseName}
                         handleChange={handleChange}
                     />
                 </div>
 
                 {/* 2. পছন্দের শিফট (Select) */}
                 <div className="space-y-2">
-                    <SelectFiled
+                    <Selectfield
                         label={"schedule"}
                         name={"schedule"}
                         options={schedule || []}
                         defaultOption={"Select a Schedule"}
-                        value={formData.schedule}
+                        value={studentFormData.schedule}
                         handleChange={handleChange}
                     />
                 </div>
                 <div className='w-full' >
 
-                    <SelectFiled
+                    <Selectfield
                         label={`batch ${new Date().getFullYear()}`}
                         name={"batch"}
                         options={batchList}
                         defaultOption={`Select a batch -  ${new Date().getFullYear()}`}
-                        value={formData.batch}
+                        value={studentFormData.batch}
                         handleChange={handleChange}
                     />
                 </div>
                 <div className='w-full' >
 
-                    <SelectFiled
+                    <Selectfield
                         label={"Registration"}
                         name={"registrationStatus"}
                         options={registresionStatus}
                         defaultOption={"Select Registration Status"}
-                        value={formData.registrationStatus}
+                        value={studentFormData.registrationStatus}
                         handleChange={handleChange}
+                        disabled={!isAdminPath}
                     />
                 </div>
 
-                <InputField
-                    type='number'
-                    label={"Course Fee"}
-                    name={"regularCourseFee"}
-                    value={formData.regularCourseFee}
-                    handleChange={handleChange}
-                    placeholder={"Regular Course Fee"}
-                />
-                <InputField
-                    type='number'
-                    label={"Offer Fee"}
-                    name={"offerCourseFee"}
-                    value={formData.offerCourseFee}
-                    handleChange={handleChange}
-                    placeholder={"Offer Course Fee"}
-                />
+
             </div>
 
             {/* ২. ব্যক্তিগত ও অভিভাবকের তথ্য (পূর্বের ফিল্ডগুলি এখানে থাকবে) */}
@@ -211,7 +206,7 @@ export default function AdmissionForm({ handleSubmit }) {
                 <InputField
                     label={"শিক্ষার্থীর নাম"}
                     name={"studentName"}
-                    value={formData.studentName}
+                    value={studentFormData.studentName}
                     handleChange={handleChange}
                     placeholder={"Write Your good name"}
                 />
@@ -220,51 +215,51 @@ export default function AdmissionForm({ handleSubmit }) {
                     type='date'
                     label={"জন্ম তারিখ"}
                     name={"dob"}
-                    value={formData.dob}
+                    value={studentFormData.dob}
                     handleChange={handleChange}
                     placeholder={"Date of birth"}
                 />
                 <InputField
                     label={" পিতার নাম"}
                     name={"fatherName"}
-                    value={formData.fatherName}
+                    value={studentFormData.fatherName}
                     handleChange={handleChange}
                     placeholder={"Father's Name"}
                 />
                 <InputField
                     label={"মাতার নাম"}
                     name={"motherName"}
-                    value={formData.motherName}
+                    value={studentFormData.motherName}
                     handleChange={handleChange}
                     placeholder={"Mother's Name"}
                 />
 
-                <SelectFiled
+                <Selectfield
                     label={"লিঙ্গ"}
                     name={"gender"}
                     options={genders}
                     handleChange={handleChange}
-                    value={formData.gender}
+                    value={studentFormData.gender}
                 />
-                <SelectFiled
+                <Selectfield
                     label={"রক্তের গ্রুপ"}
                     name={"bloodGroup"}
                     options={bloodGroups}
                     handleChange={handleChange}
-                    value={formData.bloodGroup}
+                    value={studentFormData.bloodGroup}
                 />
-                <SelectFiled
+                <Selectfield
                     label={"Religion"}
                     name={"religion"}
                     options={religions}
                     handleChange={handleChange}
-                    value={formData.religion}
+                    value={studentFormData.religion}
                 />
                 <InputField
                     type='email'
                     label={"Email"}
-                    name={"mobileNo"}
-                    value={formData.email}
+                    name={"email"}
+                    value={studentFormData.email}
                     handleChange={handleChange}
                     placeholder={"Student Email (optional)"}
                     required={false}
@@ -273,7 +268,7 @@ export default function AdmissionForm({ handleSubmit }) {
                     type='number'
                     label={"মোবাইল নাম্বার (শিক্ষার্থী)"}
                     name={"mobileNo"}
-                    value={formData.mobileNo}
+                    value={studentFormData.mobileNo}
                     handleChange={handleChange}
                     placeholder={"Student Phone Number"}
                 />
@@ -281,11 +276,33 @@ export default function AdmissionForm({ handleSubmit }) {
                     type='number'
                     label={"মোবাইল নাম্বার (অভিভাবক)"}
                     name={"guardianMobileNo"}
-                    value={formData.guardianMobileNo}
+                    value={studentFormData.guardianMobileNo}
                     handleChange={handleChange}
                     placeholder={"Gurdian Phone Number"}
                 />
 
+                <div className=' col-span-2 grid grid-cols-2 gap-2 items-center'>
+                    <Selectfield
+                        label={" NID or Birth"}
+                        name={'nidOrBirthType'}
+                        defaultOption={"NID or Birth Number"}
+                        value={studentFormData.nidOrBirthType}
+                        options={[
+                            { name: "NID", value: "nid" },
+                            { name: "Birth", value: "birth" },
+                        ]}
+                        handleChange={handleChange}
+                    />
+                    <InputField
+                        label={`${studentFormData.nidOrBirthType || "Type Select First"} Number`}
+                        type={"number"}
+                        name={"nidOrBirth"}
+                        value={studentFormData.nidOrBirth}
+                        handleChange={handleChange}
+                        placeholder={`Write ${studentFormData.nidOrBirthType} Number`}
+                        disabled={!studentFormData.nidOrBirthType}
+                    />
+                </div>
 
             </div>
 
@@ -295,7 +312,7 @@ export default function AdmissionForm({ handleSubmit }) {
                 <InputField
                     label={"গ্রাম"}
                     name={"vill"}
-                    value={formData.vill}
+                    value={studentFormData.vill}
                     handleChange={handleChange}
                     placeholder={"Village Name"}
                 />
@@ -303,7 +320,7 @@ export default function AdmissionForm({ handleSubmit }) {
                 <InputField
                     label={"পোষ্ট অফিস"}
                     name={"post"}
-                    value={formData.post}
+                    value={studentFormData.post}
                     handleChange={handleChange}
                     placeholder={"Post Office Name"}
                 />
@@ -311,14 +328,14 @@ export default function AdmissionForm({ handleSubmit }) {
                 <InputField
                     label={"উপজেলা"}
                     name={"upozila"}
-                    value={formData.upozila}
+                    value={studentFormData.upozila}
                     handleChange={handleChange}
                     placeholder={"Upozila Name"}
                 />
                 <InputField
                     label={"জেলা"}
                     name={"dist"}
-                    value={formData.dist}
+                    value={studentFormData.dist}
                     handleChange={handleChange}
                     placeholder={"District Name"}
                 />
@@ -333,23 +350,23 @@ export default function AdmissionForm({ handleSubmit }) {
                 <div
                     className="border p-4 rounded-lg bg-gray-50 relative"
                 >
-
-
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <InputField
+                        <Selectfield
                             label={`ডিগ্রি/পরীক্ষার নাম`}
                             name="degree"
                             value={defaultEducation.degree}
                             handleChange={handleEducationChange}
-                            placeholder="যেমন: S.S.C/H.S.C"
+                            defaultOption={"Select One"}
+                            options={examName}
                         />
 
-                        <InputField
+
+                        <Selectfield
                             label={`বোর্ড/বিশ্ববিদ্যালয়`}
                             name="board"
                             value={defaultEducation.board}
                             handleChange={handleEducationChange}
-                            placeholder="যেমন: ঢাকা বোর্ড"
+                            options={boards}
                         />
 
                         <InputField
@@ -437,18 +454,23 @@ export default function AdmissionForm({ handleSubmit }) {
 
             {/* ৪. ছবি আপলোড */}
             <h3 className="text-xl font-semibold border-b pb-2 pt-4 text-gray-700">ছবি এবং কাগজপত্র</h3>
-            <div className=" space-y-2 grid grid-cols-2 gap-2">
+            <div className=" grid grid-cols-1 md:grid-cols-2 gap-2">
                 <div>
                     <Label htmlFor="photo">আপনার সাম্প্রতিক ছবি (ফটোর ফাইল)</Label>
                     <Input type="file" id="photo" name={"photo"}
-                    onChange={handleChange}
-                    required />
+                        onChange={handleChange}
+                        required />
                     <p className="text-xs my-2 text-gray-500">
                         এই ফটো রেজিস্ট্রেশনের সময় ব্যবহার হবে
                     </p>
                 </div>
-                <div className='py-4 flex items-center justify-center'>
+                <div className='py-4 flex items-center justify-center flex-col'>
+                    {imagePreview &&
+                        <small className=' mb-2 text-center inline-block' style={costomStyle}>
+                            {message}
+                        </small>}
                     <div className=' border rounded-md min-w-[200px] min-h-[200px] w-[200px] h-[200px]'>
+
                         {
                             imagePreview !== null &&
                             <Image
@@ -469,7 +491,9 @@ export default function AdmissionForm({ handleSubmit }) {
                 type="submit"
                 className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-full font-semibold transition mt-8"
             >
-                ভর্তি ফরম জমা দিন
+                {
+                    isLoading ? <Spinner /> : "ভর্তি ফরম জমা দিন"
+                }
             </Button>
         </form >)
 }

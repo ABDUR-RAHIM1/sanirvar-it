@@ -1,13 +1,40 @@
 "use client";
+import { postAction } from "@/actions/postAction";
 import AdmissionForm from "@/components/AdmissionForm";
-import React from "react";
+import { studentCreateGet } from "@/constans/Endpoints";
+import { globalContext } from "@/ContextApi/ContextApi";
+import React, { useContext, useState } from "react";
 
 export default function AddStudent() {
 
-  const handleSubmit = (e) => {
+  const { showToast, studentFormData } = useContext(globalContext);
+  const [isLoading, setIsLoading] = useState(false)
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Student Data:", formData);
-    alert("কোন লাভ নাই , কাজ চলতেছে!")
+    setIsLoading(true);
+    try {
+
+      const newBody = {
+        ...studentFormData,
+        registerBy: "mentor"
+      }
+
+      const payload = {
+        method: "POST",
+        endPoint: studentCreateGet,
+        body: newBody
+      };
+    
+      const { status, data } = await postAction(payload)
+
+      showToast(status, data)
+
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setIsLoading(false)
+    }
+
   };
 
   return (
@@ -18,6 +45,7 @@ export default function AddStudent() {
 
       <AdmissionForm
         handleSubmit={handleSubmit}
+        isLoading={isLoading}
       />
     </div>
   );

@@ -30,6 +30,10 @@ export const batchList = [
 
 export const registresionStatus = [
     {
+        name: "requested",
+        value: "requested"
+    },
+    {
         name: "admitted",
         value: "admitted"
     },
@@ -60,7 +64,69 @@ export const bloodGroups = [
 ];
 
 export const genders = [
-  { name: "পুরুষ", value: "male" },
-  { name: "মহিলা", value: "female" },
-  { name: "অন্যান্য", value: "other" }
+    { name: "পুরুষ", value: "male" },
+    { name: "মহিলা", value: "female" },
+    { name: "অন্যান্য", value: "other" }
 ];
+
+
+//  board
+export const boards = [
+    {
+        name: 'Barishal',
+        value: 'barishal',
+    },
+    {
+        name: 'Chattogram',
+        value: 'chattogram',
+    },
+    {
+        name: 'Cumilla',
+        value: 'cumilla',
+    },
+    {
+        name: 'Dinajpur',
+        value: 'dinajpur',
+    },
+    {
+        name: 'Jashore',
+        value: 'jashore',
+    },
+    {
+        name: 'Mymenshingh',
+        value: 'mymenshingh',
+    },
+    {
+        name: 'Rajshahi',
+        value: 'rajshahi',
+    },
+    {
+        name: 'Sylhet',
+        value: 'sylhet',
+    },
+    {
+        name: 'Madrasah',
+        value: 'madrasah',
+    },
+    {
+        name: 'Tehcnical',
+        value: 'tehcnical',
+    },
+];
+
+
+//  exam Name
+export const examName = [
+    {
+        name: "JSC/Equivalent",
+        value: "jsc"
+    },
+    {
+        name: "SSC/Equivalent",
+        value: "ssc"
+    },
+    {
+        name: "HSC/Equivalent",
+        value: "hsc"
+    },
+]

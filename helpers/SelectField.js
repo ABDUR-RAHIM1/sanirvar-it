@@ -1,14 +1,14 @@
 import React from 'react'
 
-export default function SelectFiled({
-    label, name, options = [], defaultOption, value, required = true, handleChange
+export default function SelectField({
+    label, name, options = [], defaultOption, value, required = true, handleChange, disabled = false
 }) {
- 
+
     return (
         <div className=' w-full text-sm'>
             <label
                 htmlFor={name}
-                className={"texts-sm mb-2 font-medium flex items-center gap-2 capitalize"}
+                className={"text-sm mb-1 font-medium flex items-center capitalize"}
             >{label}
                 {required &&
                     <span className=' text-red-500 font-bold'>
@@ -20,17 +20,18 @@ export default function SelectFiled({
                 name={name}
                 id={name}
                 value={value}
+                disabled={disabled}
                 className='w-full p-2 rounded-md border focus:outline-gray-300'>
                 <option value="">
                     {
-                        defaultOption || "বাছাই করুন"
+                        defaultOption || "Choose One"
                     }
                 </option>
                 {
                     options.map((op, i) => (
                         <option
                             key={op.name || i}
-                            value={op.name}>
+                            value={op.value}>
                             {op.name}
                         </option>
                     ))

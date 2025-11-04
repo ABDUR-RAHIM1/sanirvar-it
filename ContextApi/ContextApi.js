@@ -1,13 +1,40 @@
 "use client"
+import { usePathname } from 'next/navigation';
 import React, { createContext, useState } from 'react'
 import toast from 'react-hot-toast';
 
 export const globalContext = createContext();
 
 export default function ContextApi({ children }) {
-
+    const path = usePathname();
     const [studentLogin, setStudentLogin] = useState(false);
-    const [editData, setEditData] = useState(null)
+    const [editData, setEditData] = useState(null);
+    const isAdminPath = path.startsWith("/s-dashboard")
+
+    const [studentFormData, setStudentFormData] = useState({
+        courseName: "",
+        schedule: "",
+        batch: "",
+        registrationStatus: isAdminPath ? "" : "requested",
+        studentName: "",
+        fatherName: "",
+        motherName: "",
+        dob: "",
+        nidOrBirthType: "",
+        nidOrBirth: "",
+        religion: "",
+        gender: "",
+        bloodGroup: "",
+        mobileNo: "",
+        guardianMobileNo: "",
+        email: "",
+        vill: "",
+        post: "",
+        upozila: "",
+        dist: "",
+        education: [],
+        photo: ""
+    })
 
     //  image uploader
     const [imgUrl, setImgUrl] = useState("");
@@ -130,6 +157,7 @@ export default function ContextApi({ children }) {
         showToast,
         studentLogin, setStudentLogin,
         editData, setEditData,
+        studentFormData, setStudentFormData,
         uploader, uploadResponse, imgUrl
 
     }

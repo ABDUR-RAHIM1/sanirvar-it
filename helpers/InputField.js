@@ -3,15 +3,14 @@ import { Label } from '@/components/ui/label'
 import React from 'react'
 
 export default function InputField({
-    label, type = "text", name, value, handleChange, placeholder, required = true
+    label, type = "text", name, value, handleChange, placeholder, required = true, disabled = false
 }) {
-
 
     return (
         <div className='w-full'>
             <Label
                 htmlFor={name}
-                className={"texts-sm mb-2 flex items-center gap-2"}
+                className={"texts-sm mb-2 flex items-center gap-2 capitalize"}
             >{label}
                 {required &&
                     <span className=' text-red-500 font-bold'>
@@ -26,7 +25,8 @@ export default function InputField({
                 onChange={handleChange}
                 placeholder={placeholder}
                 required={required}
-                className={"text-sm"}
+                disabled={disabled}
+                className={"text-sm placeholder:capitalize"}
             />
         </div>
     )
