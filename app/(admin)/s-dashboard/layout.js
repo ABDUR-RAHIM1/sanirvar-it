@@ -1,18 +1,16 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Noto_Sans_Bengali } from "next/font/google";
 import "../../globals.css";
 import ContextApi from "@/ContextApi/ContextApi";
 import Sidebar from "./components/Sidebar";
 import { Toaster } from "react-hot-toast";
 
-const geistSans = Geist({
-    variable: "--font-geist-sans",
-    subsets: ["latin"],
+// বাংলা ফন্ট লোড করা
+const notoSansBengali = Noto_Sans_Bengali({
+    weight: ["400", "500", "700"], // চাইলে শুধু 400 দিলেও হবে
+    subsets: ["bengali"],
+    variable: "--font-noto-sans-bengali",
 });
 
-const geistMono = Geist_Mono({
-    variable: "--font-geist-mono",
-    subsets: ["latin"],
-});
 
 export const metadata = {
     title: "Admin Dashboard",
@@ -21,9 +19,9 @@ export const metadata = {
 
 export default function AdminRootLayout({ children }) {
     return (
-        <html lang="en">
+        <html lang="bn">  
             <body
-                className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+                className={`${notoSansBengali.className} font-sans antialiased`}
                 cz-shortcut-listen="true"
             >
                 <ContextApi>

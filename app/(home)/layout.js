@@ -1,16 +1,12 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Noto_Sans_Bengali } from "next/font/google";
 import "../globals.css";
 import ContextApi from "@/ContextApi/ContextApi";
 import Navbar from "../components/Navbar";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+ 
+const notoSansBengali = Noto_Sans_Bengali({
+  weight: ["400", "500", "700"], // চাইলে শুধু 400 দিলেও হবে
+  subsets: ["bengali"],
+  variable: "--font-noto-sans-bengali",
 });
 
 export const metadata = {
@@ -20,13 +16,13 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="bn"> 
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${notoSansBengali.className} font-sans antialiased`}
         cz-shortcut-listen="true"
       >
         <ContextApi>
-          <Navbar/>
+          <Navbar />
           {children}
         </ContextApi>
       </body>

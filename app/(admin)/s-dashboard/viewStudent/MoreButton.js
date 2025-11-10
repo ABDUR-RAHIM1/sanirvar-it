@@ -1,24 +1,23 @@
 "use client"
-import { Button } from '@/components/ui/button'
-import { demoStudents } from '@/localDatabase/dummyStudents';
-import { MoreHorizontal } from 'lucide-react';
+import { Button } from '@/components/ui/button' 
+import { EyeIcon } from 'lucide-react';
 import React from 'react'
 
-export default function MoreButton({studentId}) {
+export default function MoreButton({ studentData }) {
 
-    const handleMore = (id) => {
-        const student = demoStudents.find((s) => s.id === studentId);
+    const handleMore = () => {
+        const student = studentData;
         alert(`
-Name: ${student.name}
-Father: ${student.fathersName}
-Mother: ${student.mothersName}
-DOB: ${student.dateOfBirth}
+Name: ${student.studentName}
+Father: ${student.fatherName}
+Mother: ${student.motherName}
+DOB: ${student.dob}
 Gender: ${student.gender}
-Phone: ${student.phone}
-Guardian: ${student.guardianPhone}
+Phone: ${student.mobileNo}
+Guardian: ${student.guardianMobileNo}
 Email: ${student.email}
-Address: ${student.address}
-Payment: ${student.paymentStatus}
+Village: ${student.vill}
+Upozila: ${student.upozila}
     `);
     };
 
@@ -29,7 +28,7 @@ Payment: ${student.paymentStatus}
             variant="outline"
             onClick={handleMore}
         >
-            <MoreHorizontal size={16} />
+            <EyeIcon size={16} />
         </Button>
     )
 }

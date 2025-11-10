@@ -12,7 +12,7 @@ export default function ContextApi({ children }) {
     const isAdminPath = path.startsWith("/s-dashboard")
 
     const [studentFormData, setStudentFormData] = useState({
-        courseName: "",
+        course: "",
         schedule: "",
         batch: "",
         registrationStatus: isAdminPath ? "" : "requested",
@@ -33,7 +33,10 @@ export default function ContextApi({ children }) {
         upozila: "",
         dist: "",
         education: [],
-        photo: ""
+        photo: "",
+        paidAmount: 0,
+        method: "",
+        note: ""
     })
 
     //  image uploader

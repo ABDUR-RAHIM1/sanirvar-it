@@ -21,7 +21,7 @@ export default function SelectField({
                 id={name}
                 value={value}
                 disabled={disabled}
-                className='w-full p-2 rounded-md border focus:outline-gray-300'>
+                className='w-full p-1.5 rounded-md border focus:outline-gray-300'>
                 <option value="">
                     {
                         defaultOption || "Choose One"

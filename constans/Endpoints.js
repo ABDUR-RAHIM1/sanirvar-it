@@ -19,4 +19,9 @@ export const courseActions = e.NEXT_PUBLIC_COURSE_ACTIONS
 
 //  student Start
 export const studentCreateGet = e.NEXT_PUBLIC_STUDENT_CREATE_GET
+export const studentActions = e.NEXT_PUBLIC_STUDENT_ACTIONS
 //  student End
+
+//  fees Start
+export const feesCreateGet = e.NEXT_PUBLIC_FEES_CREATE_GET_ALL
+//  fees End

@@ -1,58 +1,11 @@
 "use client"
-import React, { useContext, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Trash2, Plus } from 'lucide-react'; // আইকন ব্যবহারের জন্য
+import React from 'react';
 import AdmissionForm from '@/components/AdmissionForm';
-import { globalContext } from '@/ContextApi/ContextApi';
-import { studentCreateGet } from '@/constans/Endpoints';
-import { postAction } from '@/actions/postAction';
 
-// ডাইনামিক শিক্ষাগত তথ্যের জন্য ডিফল্ট সেকশন
-const defaultEducation = {
-    degree: '',
-    board: '',
-    roll: '',
-    reg: '',
-    passingYear: '',
-    result: ''
-};
+
 
 export default function Admission() {
 
-
-    const { showToast, studentFormData } = useContext(globalContext);
-    const [isLoading, setIsLoading] = useState(false)
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setIsLoading(true);
-        try {
-
-            const newBody = {
-                ...studentFormData,
-                registerBy: "student"
-            }
-
-            const payload = {
-                method: "POST",
-                endPoint: studentCreateGet,
-                body: newBody
-            };
-
-            const { status, data } = await postAction(payload)
-
-            showToast(status, data)
-
-        } catch (error) {
-            console.log(error)
-        } finally {
-            setIsLoading(false)
-        }
-
-    };
 
     return (
         <div className="py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
@@ -91,9 +44,8 @@ export default function Admission() {
                     <div className="lg:col-span-2 bg-white p-8 rounded-xl shadow-lg">
                         <h2 className="text-3xl font-bold text-blue-600 mb-6">ভর্তি ফর্ম পূরণ করুন</h2>
 
-                        <AdmissionForm 
-                        handleSubmit={handleSubmit}
-                         isLoading={isLoading}
+                        <AdmissionForm
+                            authorName={"student"}
                         />
                     </div>
 

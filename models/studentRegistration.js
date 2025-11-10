@@ -13,9 +13,10 @@ const EducationSchema = new Schema({
 }, { _id: false });
 
 const StudentSchema = new Schema({
-    courseName: { type: String, trim: true, required: true },
+    course: { type: mongoose.Schema.Types.ObjectId, ref: "Course", trim: true, required: true },
     schedule: { type: String, required: true, trim: true },
     batch: { type: String, required: true, trim: true },
+    registrationStatus: { type: String, required: true, default: "requested" },
 
     studentName: { type: String, trim: true, required: true },
     fatherName: { type: String, required: true, trim: true },
@@ -38,6 +39,7 @@ const StudentSchema = new Schema({
     dist: { type: String, trim: true },
 
     education: { type: [EducationSchema], required: true, default: [] },
+    paidFee: { type: [], default: [] },
 
     photo: { type: String, trim: true },
 

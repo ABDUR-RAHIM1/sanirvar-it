@@ -16,13 +16,19 @@ import { globalContext } from '@/ContextApi/ContextApi';
 import { uploaderStyle } from '@/helpers/UploadStyle';
 import Spinner from '@/helpers/Spinner';
 import { usePathname } from 'next/navigation';
+import { studentCreateGet } from '@/constans/Endpoints';
+import { postAction } from '@/actions/postAction';
+import TextareaField from '@/helpers/TextareaField';
 
 
-export default function AdmissionForm({ handleSubmit, isLoading }) {
+export default function AdmissionForm({ authorName }) {
     const path = usePathname();
+    const { showToast } = useContext(globalContext);
+    const [isLoading, setIsLoading] = useState(false)
     const [courses, setCourses] = useState([])
     const [schedule, setSchedule] = useState([])
     const [imagePreview, setImagePreview] = useState(null)
+  
     const [defaultEducation, setDefaultEducation] = useState({
         degree: '',
         board: '',
@@ -36,6 +42,7 @@ export default function AdmissionForm({ handleSubmit, isLoading }) {
     const [educationInfo, setEducationInfo] = useState([]);
 
     const { studentFormData, setStudentFormData, uploader, imgUrl, uploadResponse } = useContext(globalContext);
+
 
     const { status, message } = uploadResponse;
     const costomStyle = uploaderStyle(status)
@@ -62,7 +69,7 @@ export default function AdmissionForm({ handleSubmit, isLoading }) {
                     // setSchedule(data)
                     const formatedData = courseData.map((cd) => ({
                         name: cd.title,
-                        name: cd.title,
+                        value: cd._id,
                     }));
 
                     setCourses(formatedData)
@@ -102,12 +109,10 @@ export default function AdmissionForm({ handleSubmit, isLoading }) {
 
 
     // এডুকেশন সেকশন রিমুভ করার ফাংশন
-    const handleRemoveEducation = (index) => {
-        const list = [...educationInfo];
-        list.splice(index, 1);
-        setEducationInfo(list);
+    const handleRemoveEducation = (removeIndex) => {
+        const removedEducation = educationInfo.filter((_, index) => index !== removeIndex)
+        setEducationInfo(removedEducation);
     };
-
 
     const handleEducationChange = (e) => {
         const { name, value } = e.target;
@@ -117,7 +122,8 @@ export default function AdmissionForm({ handleSubmit, isLoading }) {
         }))
     };
 
-    console.log(studentFormData)
+
+
     const handleChange = (e) => {
         const { name, value, type, files } = e.target;
         if (type === "file") {
@@ -135,7 +141,33 @@ export default function AdmissionForm({ handleSubmit, isLoading }) {
     };
 
 
-    console.log(studentFormData)
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setIsLoading(true);
+        try {
+
+            const newBody = {
+                ...studentFormData,
+                registerBy: authorName || "mentor"
+            }
+
+            const payload = {
+                method: "POST",
+                endPoint: studentCreateGet,
+                body: newBody
+            };
+
+            const { status, data } = await postAction(payload)
+
+            showToast(status, data)
+
+        } catch (error) {
+            console.log(error)
+        } finally {
+            setIsLoading(false)
+        }
+
+    };
 
 
     return (
@@ -151,11 +183,11 @@ export default function AdmissionForm({ handleSubmit, isLoading }) {
                 <div className="space-y-2">
 
                     <Selectfield
-                        label={"courseName"}
-                        name={"courseName"}
+                        label={"course"}
+                        name={"course"}
                         options={courses || []}
                         defaultOption={"Select a Course"}
-                        value={studentFormData.courseName}
+                        value={studentFormData.course}
                         handleChange={handleChange}
                     />
                 </div>
@@ -197,6 +229,52 @@ export default function AdmissionForm({ handleSubmit, isLoading }) {
 
 
             </div>
+
+            {
+                authorName === "mentor" &&
+                <div className=' col-span-2'>
+                    <h3 className="text-xl font-semibold border-b pb-2 text-gray-700">
+                        পেমেন্ট তথ্য (শুধু মাত্র মেন্টর)
+                    </h3>
+                    <div className=' mt-5 grid grid-cols-2 gap-3'>
+                        <InputField
+                            type='number'
+                            label={"Amount"}
+                            name={"paidAmount"}
+                            value={studentFormData.paidAmount}
+                            handleChange={handleChange}
+                            placeholder={"Enter Paid Amount"}
+                            required={false}
+                        />
+                        <Selectfield
+                            label={"Payment Method"}
+                            name={"method"}
+                            value={studentFormData.method}
+                            handleChange={handleChange}
+                            defaultOption={"Select Payment Method"}
+                            options={[
+                                { name: "Bkash", value: "Bkash" },
+                                { name: "Rocket", value: "Rocket" },
+                                { name: "Nagad", value: "Nagad" },
+                                { name: "By Hand", value: "By Hand" },
+                                { name: "Others", value: "Others" },
+                            ]}
+                            required={false}
+                        />
+                        <div className=' mt-3 col-span-2'>
+                            <TextareaField
+                                label={"Note"}
+                                name={"note"}
+                                value={studentFormData.note}
+                                handleChange={handleChange}
+                                placeholder={"Write About The Payemnt (optional)"}
+                                required={false}
+                            />
+                        </div>
+                    </div>
+                </div>
+
+            }
 
             {/* ২. ব্যক্তিগত ও অভিভাবকের তথ্য (পূর্বের ফিল্ডগুলি এখানে থাকবে) */}
             <h3 className="text-xl font-semibold border-b pb-2 pt-4 text-gray-700">ব্যক্তিগত ও অভিভাবকের তথ্য</h3>
@@ -411,7 +489,7 @@ export default function AdmissionForm({ handleSubmit, isLoading }) {
                         onClick={handleAddEducation}
                         className="w-full my-3 border-blue-600 text-blue-600 hover:bg-blue-50"
                     >
-                        <Plus className="mr-2 h-4 w-4" /> আরও শিক্ষাগত তথ্য যোগ করুন
+                        <Plus className="mr-2 h-4 w-4" /> শিক্ষাগত তথ্য যোগ করুন
                     </Button>
                 </div>
 
@@ -432,7 +510,10 @@ export default function AdmissionForm({ handleSubmit, isLoading }) {
                             {educationInfo.map((ed, index) => (
 
                                 <TableRow key={index}>
-                                    <TableCell>{ed.degree}</TableCell>
+                                    <TableCell
+                                        onClick={() => handleRemoveEducation(index)}
+                                        className={" hover:underline hover:text-red-500 transition-all cursor-pointer"}
+                                    >{ed.degree}</TableCell>
                                     <TableCell>{ed.board}</TableCell>
                                     <TableCell>{ed.roll}</TableCell>
                                     <TableCell>{ed.reg}</TableCell>
