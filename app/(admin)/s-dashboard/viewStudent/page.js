@@ -70,7 +70,7 @@ export default async function ViewStudent() {
                                     </TableCell>
 
                                     <TableCell>
-                                        <div className='flex items-center flex-wrap gap-2 justify-between w-[80px] bg-blue-100 p-2 rounded-md '>
+                                        <div className='flex items-center flex-wrap gap-2 justify-between w-auto min-w-[100px] bg-blue-100 p-2 rounded-md '>
                                             <div>
                                                 {Array.isArray(student.paidFee) && student.paidFee.length > 0 ? (() => {
                                                     const totalValue = student.paidFee.reduce((sum, val) => sum + Number(val), 0);
@@ -91,7 +91,10 @@ export default async function ViewStudent() {
                                                     <span>0</span>
                                                 )}
                                             </div>
-                                            <AddFeeDailog />
+
+                                            <AddFeeDailog
+                                                studentId={student._id}
+                                            />
 
                                         </div>
                                     </TableCell>
