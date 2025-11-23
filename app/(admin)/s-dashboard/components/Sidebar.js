@@ -10,7 +10,8 @@ import {
     Settings,
     LogOut,
     Menu,
-    Home
+    Home,
+    DollarSign
 } from 'lucide-react'
 
 export default function Sidebar({ className = '' }) {
@@ -25,6 +26,7 @@ export default function Sidebar({ className = '' }) {
         { id: 'viewStudent', label: 'স্টুডেন্ট তালিকা দেখুন', icon: Calendar, href: '/s-dashboard/viewStudent' },
         { id: 'createResult', label: 'রেজাল্ট তৈরি করুন', icon: User, href: '/s-dashboard/createResult' },
         { id: 'viewResult', label: 'রেজাল্ট তালিকা দেখুন', icon: User, href: '/s-dashboard/viewResult' },
+        { id: 'paymentHistory', label: 'পেমেন্ট গুলো', icon: DollarSign, href: '/s-dashboard/paymentHistory' },
         { id: 'trainers', label: 'ট্রেইনার', icon: User, href: '/s-dashboard/trainers' },
         { id: 'certificates', label: 'সার্টিফিকেট', icon: Award, href: '/s-dashboard/certificates' },
         { id: 'settings', label: 'সেটিংস', icon: Settings, href: '/s-dashboard/settings' }

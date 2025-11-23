@@ -1,4 +1,5 @@
 
+import { getAllData } from "@/controllers/getAllData";
 import { errorResponse, successResponseWithMessage } from "../helpers/response";
 import { PaymentModel } from "@/models/paymentInfo";
 import StudentModel from "@/models/studentRegistration";
@@ -6,7 +7,7 @@ import StudentModel from "@/models/studentRegistration";
 //  /api/fees 
 export const POST = async (req) => {
     const body = await req.json();
- 
+
     if (Object.keys(body).length === 0) {
         return errorResponse("Request body cannot be empty.", 400);
     }
@@ -30,7 +31,7 @@ export const POST = async (req) => {
 
         // ✅ Student model এ paidFee তে নতুন amount যোগ করা
         isStudent.paidFee.push(paidAmount);
- 
+
         // ✅ আপডেট save করা
         await isStudent.save();
 
@@ -41,3 +42,15 @@ export const POST = async (req) => {
         return errorResponse("Failed to add fee", 500);
     }
 };
+
+
+// get all payemnts
+export const GET = async (req) => {
+
+    return getAllData(PaymentModel, {
+        sort: { createdAt: -1 },
+        populate: { path: "student", select: "studentName studentRoll photo " }
+    });
+
+
+}

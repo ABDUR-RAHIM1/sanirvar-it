@@ -4,11 +4,11 @@ import Image from 'next/image';
 import { demoStudents } from '@/localDatabase/dummyStudents';
 import MoreButton from './MoreButton';
 import DeleteButton from '@/Buttons/DeleteButton';
-import EditButton from '@/Buttons/EditButton';
 import { getAllStudents } from '@/fetch/students';
 import RegistrationStatus from './RegistrationStatus';
 import { studentActions } from '@/constans/Endpoints';
 import AddFeeDailog from '@/components/AddFeeDailog';
+import EditButton from '@/Buttons/EditButton';
 
 export default async function ViewStudent() {
 
@@ -115,7 +115,7 @@ export default async function ViewStudent() {
                                         />
                                         <EditButton
                                             data={student}
-                                            path={"/s-dashboard/courses"}
+                                            route={"/s-dashboard/addStudent"}
                                         />
                                         <DeleteButton
                                             deleteRoute={studentActions + student._id}

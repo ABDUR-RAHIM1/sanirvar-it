@@ -24,4 +24,5 @@ export const studentActions = e.NEXT_PUBLIC_STUDENT_ACTIONS
 
 //  fees Start
 export const feesCreateGet = e.NEXT_PUBLIC_FEES_CREATE_GET_ALL
+export const feesGetBySearch = e.NEXT_PUBLIC_FEES_GET_BY_SEARCH
 //  fees End

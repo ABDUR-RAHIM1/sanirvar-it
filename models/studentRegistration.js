@@ -14,6 +14,7 @@ const EducationSchema = new Schema({
 
 const StudentSchema = new Schema({
     course: { type: mongoose.Schema.Types.ObjectId, ref: "Course", trim: true, required: true },
+    studentRoll: { type: String, required: true },
     schedule: { type: String, required: true, trim: true },
     batch: { type: String, required: true, trim: true },
     registrationStatus: { type: String, required: true, default: "requested" },
