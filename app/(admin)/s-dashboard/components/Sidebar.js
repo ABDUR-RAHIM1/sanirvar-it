@@ -11,26 +11,44 @@ import {
     LogOut,
     Menu,
     Home,
-    DollarSign
+    DollarSign,
+    ChevronDown,
+    ChevronUp
 } from 'lucide-react'
 
 export default function Sidebar({ className = '' }) {
     const [collapsed, setCollapsed] = useState(false)
     const [active, setActive] = useState('dashboard')
+    const [openSubMenu, setOpenSubMenu] = useState(null)
 
     const menu = [
         { id: 'dashboard', label: 'ড্যাশবোর্ড', icon: Home, href: '/s-dashboard' },
         { id: 'courses', label: 'কোর্সসমূহ', icon: BookOpen, badge: '12', href: '/s-dashboard/courses' },
-        { id: 'schedule', label: 'শিডিউল', icon: Calendar, href: '/s-dashboard/schedule' },
-        { id: 'addStudent', label: 'স্টুডেন্ট যুক্ত করুন', icon: Calendar, href: '/s-dashboard/addStudent' },
-        { id: 'viewStudent', label: 'স্টুডেন্ট তালিকা দেখুন', icon: Calendar, href: '/s-dashboard/viewStudent' },
-        { id: 'createResult', label: 'রেজাল্ট তৈরি করুন', icon: User, href: '/s-dashboard/createResult' },
-        { id: 'viewResult', label: 'রেজাল্ট তালিকা দেখুন', icon: User, href: '/s-dashboard/viewResult' },
+        {
+            id: 'students', label: 'স্টুডেন্ট ম্যানেজমেন্ট', icon: User, subMenu: [
+                { id: 'addStudent', label: 'স্টুডেন্ট যুক্ত করুন', href: '/s-dashboard/addStudent' },
+                { id: 'viewStudent', label: 'স্টুডেন্ট তালিকা দেখুন', href: '/s-dashboard/viewStudent' },
+            ]
+        },
+        {
+            id: 'results', label: 'রেজাল্ট', icon: User, subMenu: [
+                { id: 'createResult', label: 'রেজাল্ট তৈরি করুন', href: '/s-dashboard/createResult' },
+                { id: 'viewResult', label: 'রেজাল্ট তালিকা দেখুন', href: '/s-dashboard/viewResult' },
+            ]
+        },
         { id: 'paymentHistory', label: 'পেমেন্ট গুলো', icon: DollarSign, href: '/s-dashboard/paymentHistory' },
         { id: 'trainers', label: 'ট্রেইনার', icon: User, href: '/s-dashboard/trainers' },
         { id: 'certificates', label: 'সার্টিফিকেট', icon: Award, href: '/s-dashboard/certificates' },
-        { id: 'settings', label: 'সেটিংস', icon: Settings, href: '/s-dashboard/settings' }
+        {
+            id: 'settings', label: 'সেটিংস', icon: Settings, subMenu: [
+                { id: 'pages', label: 'পেজ গুলো', href: '/s-dashboard/settings/pages' },
+            ]
+        },
     ]
+
+    const toggleSubMenu = (id) => {
+        setOpenSubMenu(openSubMenu === id ? null : id)
+    }
 
     return (
         <aside
@@ -38,6 +56,7 @@ export default function Sidebar({ className = '' }) {
             aria-label="sidebar"
         >
             <div>
+                {/* Sidebar Header */}
                 <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
                         <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-indigo-500 to-cyan-400 flex items-center justify-center text-white text-lg font-bold shadow-md">
@@ -59,6 +78,7 @@ export default function Sidebar({ className = '' }) {
                     </button>
                 </div>
 
+                {/* Search */}
                 <div className={`mt-4 transition-all ${collapsed ? 'hidden' : 'block'}`}>
                     <label className="relative block">
                         <input
@@ -68,32 +88,51 @@ export default function Sidebar({ className = '' }) {
                     </label>
                 </div>
 
+                {/* Navigation Menu */}
                 <nav className="mt-6">
                     <ul className="flex flex-col gap-1">
                         {menu.map((m) => {
                             const Icon = m.icon
                             const isActive = active === m.id
+                            const hasSubMenu = m.subMenu && m.subMenu.length > 0
+                            const isOpen = openSubMenu === m.id
+
                             return (
                                 <li key={m.id}>
-                                    <Link href={m.href} passHref>
+                                    <div className={`group flex items-center justify-between w-full px-3 py-2 rounded-md transition-colors duration-150 ${isActive ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-700/10 dark:text-indigo-300 font-medium' : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800'}`}>
                                         <button
-                                            onClick={() => setActive(m.id)}
-                                            className={`group flex items-center gap-3 w-full text-left px-3 py-2 rounded-md transition-colors duration-150 ${isActive
-                                                ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-700/10 dark:text-indigo-300 font-medium'
-                                                : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800'
-                                            }`}
+                                            onClick={() => hasSubMenu ? toggleSubMenu(m.id) : setActive(m.id)}
+                                            className="flex items-center gap-3 w-full text-left"
                                         >
                                             <span className="flex items-center justify-center w-9 h-9 rounded-md bg-white/60 shadow-sm">
                                                 <Icon size={18} />
                                             </span>
-
                                             <span className={`${collapsed ? 'hidden' : 'block'}`}>{m.label}</span>
-
-                                            {m.badge && !collapsed && (
-                                                <span className="ml-auto text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full">{m.badge}</span>
-                                            )}
                                         </button>
-                                    </Link>
+                                        {hasSubMenu && !collapsed && (
+                                            <button onClick={() => toggleSubMenu(m.id)}>
+                                                {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    {/* SubMenu */}
+                                    {hasSubMenu && isOpen && !collapsed && (
+                                        <ul className="ml-12 mt-1 flex flex-col gap-1">
+                                            {m.subMenu.map((sm) => (
+                                                <li key={sm.id}>
+                                                    <Link href={sm.href} passHref>
+                                                        <button
+                                                            onClick={() => setActive(sm.id)}
+                                                            className={`group flex items-center gap-3 w-full text-left px-3 py-2 rounded-md transition-colors duration-150 ${active === sm.id ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-700/10 dark:text-indigo-300 font-medium' : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800'}`}
+                                                        >
+                                                            <span className="text-sm">{sm.label}</span>
+                                                        </button>
+                                                    </Link>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
                                 </li>
                             )
                         })}
@@ -101,6 +140,7 @@ export default function Sidebar({ className = '' }) {
                 </nav>
             </div>
 
+            {/* User Info */}
             <div className="mt-4">
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
@@ -116,27 +156,6 @@ export default function Sidebar({ className = '' }) {
                         <LogOut size={16} />
                     </button>
                 </div>
-
-                <div className={`mt-4 flex items-center justify-between gap-2 ${collapsed ? 'flex' : 'hidden'}`}>
-                    <Link href='/profile'><button className="p-2 rounded-md" title="Profile"><User size={16} /></button></Link>
-                    <Link href='/courses'><button className="p-2 rounded-md" title="Courses"><BookOpen size={16} /></button></Link>
-                    <Link href='/settings'><button className="p-2 rounded-md" title="Settings"><Settings size={16} /></button></Link>
-                </div>
-            </div>
-
-            <div className="fixed bottom-4 left-1/2 -translate-x-1/2 sm:hidden w-[92%] bg-white/95 border border-gray-200 rounded-full p-2 shadow-lg flex justify-around">
-                {menu.slice(0, 4).map((m) => {
-                    const Icon = m.icon
-                    const isActive = active === m.id
-                    return (
-                        <Link href={m.href} key={m.id} passHref>
-                            <button onClick={() => setActive(m.id)} className={`flex flex-col items-center gap-1 text-xs ${isActive ? 'text-indigo-600' : 'text-gray-600'}`}>
-                                <Icon size={18} />
-                                <span>{m.label.split('')[0]}</span>
-                            </button>
-                        </Link>
-                    )
-                })}
             </div>
         </aside>
     )

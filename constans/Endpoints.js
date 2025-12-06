@@ -26,3 +26,18 @@ export const studentActions = e.NEXT_PUBLIC_STUDENT_ACTIONS
 export const feesCreateGet = e.NEXT_PUBLIC_FEES_CREATE_GET_ALL
 export const feesGetBySearch = e.NEXT_PUBLIC_FEES_GET_BY_SEARCH
 //  fees End
+
+
+
+
+
+
+/**
+ * Pages start here
+ */
+export const pageCreate = e.NEXT_PUBLIC_PAGE_CREATE
+export const pageGetOne = e.NEXT_PUBLIC_PAGE_GET_ONE
+
+/**
+ * Pages End here
+ */
