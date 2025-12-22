@@ -30,7 +30,7 @@ export default function SelectField({
                 {
                     options.map((op, i) => (
                         <option
-                            key={op.name || i}
+                            key={op.name + i}
                             value={op.value}>
                             {op.name}
                         </option>

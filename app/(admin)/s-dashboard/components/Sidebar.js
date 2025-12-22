@@ -32,11 +32,16 @@ export default function Sidebar({ className = '' }) {
         },
         {
             id: 'results', label: 'রেজাল্ট', icon: User, subMenu: [
-                { id: 'createResult', label: 'রেজাল্ট তৈরি করুন', href: '/s-dashboard/createResult' },
                 { id: 'viewResult', label: 'রেজাল্ট তালিকা দেখুন', href: '/s-dashboard/viewResult' },
             ]
         },
-        { id: 'paymentHistory', label: 'পেমেন্ট গুলো', icon: DollarSign, href: '/s-dashboard/paymentHistory' },
+        {
+            id: 'paymentHistory', label: 'পেমেন্ট', icon: DollarSign, subMenu: [
+                { id: 'payments', label: 'পেমেন্ট গুলো', href: '/s-dashboard/paymentHistory' },
+
+            ]
+        },
+
         { id: 'trainers', label: 'ট্রেইনার', icon: User, href: '/s-dashboard/trainers' },
         { id: 'certificates', label: 'সার্টিফিকেট', icon: Award, href: '/s-dashboard/certificates' },
         {

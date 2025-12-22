@@ -28,7 +28,9 @@ export const feesGetBySearch = e.NEXT_PUBLIC_FEES_GET_BY_SEARCH
 //  fees End
 
 
-
+/**============= result start here ============================= */
+export const resultCreateGetAll = e.NEXT_PUBLIC_RESULT_CREATE_GET
+/**============= result End here ============================= */
 
 
 

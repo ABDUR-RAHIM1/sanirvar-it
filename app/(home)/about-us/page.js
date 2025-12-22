@@ -8,7 +8,7 @@ export default async function AboutUs() {
     const pageName = "about"  //  hard Coded page Name 
 
     const { status, data } = await getOnePage(pageName);
-
+    
     if (status !== 200 || !data) {
         return <NotFound text={"About page not found!"} />
     }
