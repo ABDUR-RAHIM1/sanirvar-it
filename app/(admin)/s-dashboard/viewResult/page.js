@@ -12,12 +12,12 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { Pencil, Trash2 } from "lucide-react"
+import { EyeIcon, Pencil, Trash2 } from "lucide-react"
+import Image from 'next/image'
 
 export default async function ViewResult() {
     const { status, data: results } = await getAllResults()
 
-console.log(results)
     if (status !== 200 || !results?.length) {
         return <NotFound text="Result not found!" />
     }
@@ -41,12 +41,14 @@ console.log(results)
                     <TableHeader>
                         <TableRow>
                             <TableHead>Result Type</TableHead>
+                            <TableHead>Photo</TableHead>
                             <TableHead>Student</TableHead>
                             <TableHead>Total</TableHead>
                             <TableHead>Obtained</TableHead>
                             <TableHead>%</TableHead>
                             <TableHead>Grade</TableHead>
                             <TableHead>Status</TableHead>
+                            <TableHead>Details</TableHead>
                             <TableHead className="text-right">Action</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -60,8 +62,18 @@ console.log(results)
                                     <TableCell className="capitalize">
                                         {result.resultType}
                                     </TableCell>
-                                    <TableCell className="capitalize">
-                                        {result.student?.studentName || "N/A"}
+                                    <TableCell>
+                                        <Image
+                                            src={result.student?.photo}
+                                            width={50}
+                                            height={50}
+                                            alt='Sanirvor computer training center'
+                                            className=' rounded-md'
+                                        />
+                                    </TableCell>
+                                    <TableCell className="capitalize flex flex-col gap-2">
+                                        <p>  {result.student?.studentName || "N/A"}</p>
+                                        <p>  {result.student?.studentRoll || "N/A"}</p>
                                     </TableCell>
 
                                     <TableCell>{result.totalMark}</TableCell>
@@ -88,6 +100,13 @@ console.log(results)
                                             {result.status}
                                         </span>
                                     </TableCell>
+                                    <TableCell>
+                                        <Button asChild className={"bg-blue-500"}>
+                                            <Link href={`/s-dashboard/viewResult/${result._id}`}>
+                                                <EyeIcon size={10} />
+                                            </Link>
+                                        </Button>
+                                    </TableCell>
 
                                     {/* ===== Actions (NO handler) ===== */}
                                     <TableCell className="text-right space-x-2">
@@ -106,7 +125,7 @@ console.log(results)
                                 </TableRow>
 
                                 {/* ===== Subject Details ===== */}
-                                <TableRow>
+                                {/* <TableRow>
                                     <TableCell colSpan={7} className="bg-muted/50">
                                         <div className="p-4 space-y-3">
                                             <h4 className="font-semibold">
@@ -150,7 +169,7 @@ console.log(results)
                                             </Table>
                                         </div>
                                     </TableCell>
-                                </TableRow>
+                                </TableRow> */}
 
                             </React.Fragment>
                         ))}

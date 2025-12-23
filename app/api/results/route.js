@@ -111,12 +111,13 @@ export const POST = async (request) => {
     }
 };
 
- 
+
 
 export async function GET(request) {
 
     return getAllData(resultModel, {
         sort: { createdAt: -1 },
+        select: "-subjectWiseResults",
         populate: { path: "student", select: "studentName studentRoll photo " }
     });
 };

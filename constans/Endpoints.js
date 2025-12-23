@@ -30,6 +30,7 @@ export const feesGetBySearch = e.NEXT_PUBLIC_FEES_GET_BY_SEARCH
 
 /**============= result start here ============================= */
 export const resultCreateGetAll = e.NEXT_PUBLIC_RESULT_CREATE_GET
+export const resultCreateGetSingel = e.NEXT_PUBLIC_RESULT_GET_SINGEL
 /**============= result End here ============================= */
 
 

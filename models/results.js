@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const resultSchema = mongoose.Schema({
     resultType: { type: String, required: true },
     student: { type: mongoose.Schema.Types.ObjectId, ref: "Student" },
+    // course: { type: mongoose.Schema.Types.ObjectId, ref: "Course" }, // trade
     totalMark: { type: Number, required: true },
     totalObtained: { type: Number, required: true },
     percentage: { type: Number, required: true },

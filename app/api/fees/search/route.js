@@ -28,7 +28,7 @@ export const GET = async (req) => {
                 $match: {
                     $or: [
                         { "student.studentName": { $regex: search, $options: "i" } },
-                        { "student.studentRoll": search }
+                        { "student.studentRoll": "15125-"+search }
                     ]
                 }
             }
